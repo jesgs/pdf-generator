@@ -1,0 +1,15 @@
+{
+    "name": "jess/pdf-generator",
+    "description": "WordPress plugin for generating PDFs",
+    "require": {
+        "mpdf/mpdf": "^7.1"
+    },
+    "license": "GPL",
+    "authors": [
+        {
+            "name": "Jess Green",
+            "email": "hello@jessgreen.io"
+        }
+    ],
+    "minimum-stability": "dev"
+}
