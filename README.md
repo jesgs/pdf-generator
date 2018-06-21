@@ -11,4 +11,4 @@ Generate PDFs using WordPress templates
 
 ## Changelog
 ### 0.0.1
-    * Initial release
+ * Initial release
