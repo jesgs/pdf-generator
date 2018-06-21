@@ -11,7 +11,7 @@
  * Plugin Name: PDF Generator
  * Plugin URI: https://www.jessgreen.io/projects/pdf-generator
  * Description: A template-based PDF generator
- * Version:     1.0.0
+ * Version:     0.0.1
  * Author:      Jess Green
  * Author URI: https://www.jessgreen.io/
  * Text Domain: pdf-generator
@@ -19,10 +19,6 @@
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  */
 namespace JesGs\PDFGenerator;
-
-use \Mpdf\Mpdf as Mpdf;
-use \Mpdf\MpdfException;
-use \Mpdf\Output\Destination;
 
 if (!defined('ABSPATH')) exit;
 
@@ -43,7 +39,8 @@ if (!defined('PDFGEN_LANG')) {
     define('PDFGEN_LANG', $plugin_folder . '/lang');
 }
 
-require PDFGEN_ABSPATH . 'vendor/autoload.php';
+require_once PDFGEN_ABSPATH . 'vendor/autoload.php';
+require_once PDFGEN_ABSPATH . 'class.pdf-view.php';
 
 add_action('plugins_loaded', array(__NAMESPACE__ . '\Bootstrap', 'load_plugin'));
 
@@ -56,11 +53,6 @@ class Bootstrap
      */
     private static $instance = null;
 
-    /**
-     * @var \Mpdf\Mpdf
-     */
-    private static $mpdf = null;
-
 
     /**
      * Load the plugin
@@ -68,26 +60,6 @@ class Bootstrap
     public static function load_plugin()
     {
         self::$instance = new self();
-    }
-
-
-    /**
-     * @return \Mpdf\Mpdf
-     */
-    public static function get_mpdf_instance()
-    {
-        if (self::$mpdf == null) {
-            try {
-                $upload_dir = wp_upload_dir(false);
-                self::$mpdf = new Mpdf([
-                    'tempDir' => $upload_dir['basedir'] . '/pdftmp'
-                ]);
-            } catch (MpdfException $exception) {
-                error_log($exception->getMessage());
-            }
-        }
-
-        return self::$mpdf;
     }
 
 
@@ -138,9 +110,9 @@ class Bootstrap
             return $default_template;
         }
 
-        $template = locate_template(array(
+        $template = locate_template([
             self::PDF_ENDPOINT . '/' . basename($default_template),
-        ));
+        ]);
 
         if (!$template) {
             $template = PDFGEN_ABSPATH . 'templates/' . basename($default_template);
@@ -155,57 +127,9 @@ class Bootstrap
             return $template;
         }
 
-        ob_start();
-        require_once $template;
-        $contents = ob_get_contents();
-        ob_end_clean();
+        $mpdfView = PdfView::get_instance();
+        $mpdfView->process_template_markup($template);
 
-        /**
-         * Pre PDF-generation filtering for HTML doc
-         *
-         * @since 0.1.0
-         *
-         * @param string $contents HTML content to be filtered
-         * @return string
-         */
-        $contents = apply_filters('jesgs_pdf_pre_filter_contents', $contents);
-
-        $filename = sanitize_file_name(get_query_var('pdf'));
-        $this->create_pdf($contents, $filename);
-        return true;
-    }
-
-    /**
-     * Check query vars to determine if output should go to a file or displayed in browser
-     *
-     * @return bool
-     */
-    private function do_download()
-    {
-        return get_query_var(self::PDF_ENDPOINT) && filter_input(INPUT_GET, self::PDF_ENDPOINT);
-    }
-
-    /**
-     * Create the PDF and then display it
-     *
-     * @param string $contents
-     * @param string $filename
-     */
-    private function create_pdf($contents, $filename)
-    {
-        $destination = $this->do_download() ? Destination::DOWNLOAD : Destination::INLINE;
-
-        $mpdf = Bootstrap::get_mpdf_instance();
-        $mpdf->debug = WP_DEBUG;
-        $mpdf->showImageErrors = true;
-        $mpdf->CSSselectMedia = apply_filters('jesgs_pdf_css_media', 'screen'); // allow this to be overridden
-        $mpdf->dpi = 96;
-        try {
-            $mpdf->WriteHTML($contents, 2);
-            $mpdf->Output($filename, $destination);
-        } catch (MpdfException $exception) {
-            error_log($exception->getMessage());
-        }
-        exit();
+        return '';
     }
 }
