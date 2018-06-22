@@ -20,6 +20,8 @@
  */
 namespace JesGs\PDFGenerator;
 
+use Mpdf\Mpdf;
+
 if (!defined('ABSPATH')) exit;
 
 $plugin_folder = plugin_basename(dirname(__FILE__));
@@ -39,8 +41,13 @@ if (!defined('PDFGEN_LANG')) {
     define('PDFGEN_LANG', $plugin_folder . '/lang');
 }
 
-require_once PDFGEN_ABSPATH . 'vendor/autoload.php';
 require_once PDFGEN_ABSPATH . 'class.pdf-view.php';
+require_once PDFGEN_ABSPATH . 'class.pdf-gen-install.php';
+
+$install = PdfGeneratorInstall::get_instance();
+register_activation_hook(__FILE__, array($install, 'do_activate'));
+register_deactivation_hook(__FILE__, array($install, 'do_deactivate'));
+
 
 add_action('plugins_loaded', array(__NAMESPACE__ . '\Bootstrap', 'load_plugin'));
 
@@ -68,6 +75,16 @@ class Bootstrap
      */
     protected function __construct()
     {
+        if (!class_exists('Mpdf\Mpdf')) {
+            require_once PDFGEN_ABSPATH . 'vendor/autoload.php';
+        } else {
+            // check Mpdf version
+            // admin notice about another version of Mpdf being installed
+             if (version_compare(Mpdf::VERSION, '7.1.0', '>')) {
+                 wp_die(__('Another plugin is using an older version of Mpdf. Please deactivate that plugin before using this one.', PDFGEN_DOMAIN));
+             }
+        }
+
         add_action('init', array($this, 'init'), 999);
         add_filter('query_vars', array($this, 'query_vars'));
         add_filter('template_include', array($this, 'template_include'));
