@@ -21,6 +21,7 @@
 namespace JesGs\PDFGenerator;
 
 use Mpdf\Mpdf;
+use JesGs\PDFGenerator\Lib\Translatable;
 
 if (!defined('ABSPATH')) exit;
 
@@ -43,6 +44,7 @@ if (!defined('PDFGEN_LANG')) {
 
 require_once PDFGEN_ABSPATH . 'class.pdf-view.php';
 require_once PDFGEN_ABSPATH . 'class.pdf-gen-install.php';
+require_once PDFGEN_ABSPATH . 'lib/translatable.php';
 
 $install = PdfGeneratorInstall::get_instance();
 register_activation_hook(__FILE__, array($install, 'do_activate'));
@@ -81,7 +83,7 @@ class Bootstrap
             // check Mpdf version
             // admin notice about another version of Mpdf being installed
              if (version_compare(Mpdf::VERSION, '7.1.0', '>')) {
-                 wp_die(__('Another plugin is using an older version of Mpdf. Please deactivate that plugin before using this one.', PDFGEN_DOMAIN));
+                 wp_die(Translatable::get('old_mpdf'));
              }
         }
 
@@ -115,6 +117,7 @@ class Bootstrap
         $vars[] = self::PDF_ENDPOINT;
         return $vars;
     }
+
 
     /**
      * @param $default_template

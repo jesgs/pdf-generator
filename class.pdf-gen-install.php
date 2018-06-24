@@ -2,6 +2,8 @@
 namespace JesGs\PDFGenerator;
 
 
+use JesGs\PDFGenerator\Lib\Translatable;
+
 class PdfGeneratorInstall
 {
 
@@ -58,9 +60,34 @@ class PdfGeneratorInstall
      */
     public function do_activate()
     {
-        global $wp_version;
-
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+        $this->activation_checks();
+
+        if ($this->mpdf_exists()) {
+            wp_die(Translatable::get('different_mpdf'));
+        }
+
+        $this->after_plugin_activation();
+        flush_rewrite_rules(false);
+    }
+
+
+    /**
+     * Check for existence of Mpdf
+     * @return bool
+     */
+    public function mpdf_exists()
+    {
+        return class_exists('Mpdf\Mpdf');
+    }
+
+
+    /**
+     * Activation checks
+     */
+    private function activation_checks()
+    {
+        global $wp_version;
 
         // Check for capability
         if ( !current_user_can('activate_plugins') ){
@@ -81,10 +108,6 @@ class PdfGeneratorInstall
                 . ' Please upgrade to WordPress 3.0', 'Wrong Version'
             );
         }
-
-        $this->after_plugin_activation();
-
-        flush_rewrite_rules(false);
     }
 
 

@@ -32,6 +32,7 @@ class PdfView
 
 
     /**
+     * Get an instance of Mpdf
      * @return \Mpdf\Mpdf
      */
     public static function get_mpdf_instance()
@@ -59,8 +60,15 @@ class PdfView
         return get_query_var(Bootstrap::PDF_ENDPOINT) && filter_input(INPUT_GET, Bootstrap::PDF_ENDPOINT);
     }
 
+    /**
+     * @param string $template Template filename to load
+     */
     public function process_template_markup($template)
     {
+        /**
+         * Load the template, and allow The Loop to run
+         * inside output buffering
+         */
         ob_start();
         require_once $template;
         $contents = ob_get_contents();
@@ -69,7 +77,7 @@ class PdfView
         /**
          * Pre PDF-generation filtering for HTML doc
          *
-         * @since 0.1.0
+         * @since 0.0.1
          *
          * @param string $contents HTML content to be filtered
          * @return string
