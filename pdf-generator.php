@@ -45,6 +45,7 @@ if (!defined('PDFGEN_LANG')) {
 require_once PDFGEN_ABSPATH . 'class.pdf-view.php';
 require_once PDFGEN_ABSPATH . 'class.pdf-gen-install.php';
 require_once PDFGEN_ABSPATH . 'lib/translatable.php';
+require_once PDFGEN_ABSPATH . 'lib/template-functions.php';
 
 $install = PdfGeneratorInstall::get_instance();
 register_activation_hook(__FILE__, array($install, 'do_activate'));
@@ -126,16 +127,16 @@ class Bootstrap
      */
     public function template_include($default_template)
     {
-        if (!get_query_var(self::PDF_ENDPOINT)) {
+        if (!in_array(get_query_var(self::PDF_ENDPOINT), ['view', 'download'])) {
             return $default_template;
         }
 
         $template = locate_template([
             self::PDF_ENDPOINT . '/' . basename($default_template),
-        ]);
+        ], false, false);
 
         if (!$template) {
-            $template = PDFGEN_ABSPATH . 'templates/' . basename($default_template);
+            $template = PDFGEN_ABSPATH . 'templates/single.php';
         }
 
         add_filter('body_class', function ($classes) {

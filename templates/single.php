@@ -1,4 +1,6 @@
 <?php
+get_pdf_header();
+
 /* Start the Loop */
 while ( have_posts() ) : the_post(); ?>
 
@@ -21,3 +23,4 @@ while ( have_posts() ) : the_post(); ?>
     </article><!-- #post-## -->
 <?php endwhile; // End of the loop.
 
+get_pdf_footer();

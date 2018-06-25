@@ -57,7 +57,7 @@ class PdfView
      */
     private function do_download()
     {
-        return get_query_var(Bootstrap::PDF_ENDPOINT) && filter_input(INPUT_GET, Bootstrap::PDF_ENDPOINT);
+        return (get_query_var(Bootstrap::PDF_ENDPOINT) === 'download' );
     }
 
     /**
@@ -84,7 +84,14 @@ class PdfView
          */
         $contents = apply_filters('jesgs_pdf_pre_filter_contents', $contents);
 
-        $filename = sanitize_file_name(get_query_var('pdf'));
+        // use post or page-name as filename
+        if (get_post_type() == 'page') {
+            $filename = get_query_var('pagename');
+        } else {
+            $filename = get_query_var('name');
+        }
+
+        $filename = sanitize_file_name($filename) . '.pdf';
         $this->create_pdf($contents, $filename);
     }
 
@@ -102,7 +109,7 @@ class PdfView
         $mpdf = self::get_mpdf_instance();
         $mpdf->debug = WP_DEBUG;
         $mpdf->showImageErrors = true;
-        $mpdf->CSSselectMedia = apply_filters('jesgs_pdf_css_media', 'screen'); // allow this to be overridden
+        $mpdf->CSSselectMedia = apply_filters('jesgs_pdf_css_media', 'print'); // allow this to be overridden
         $mpdf->dpi = 96;
         try {
             $mpdf->WriteHTML($contents, 0);
