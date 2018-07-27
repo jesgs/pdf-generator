@@ -25,6 +25,14 @@ if (!function_exists('get_pdf_footer')) {
     }
 }
 
+if (!function_exists('get_pdf_permalink')) {
+    function get_pdf_permalink(\WP_Post $post)
+    {
+        $permalink = get_permalink($post->ID);
+    }
+}
+
+
 /**
  * Look for a template in the theme. If not found, use plugin's template
  * @param string $default_template

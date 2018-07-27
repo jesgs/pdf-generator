@@ -1,0 +1,14 @@
+@font-face {
+    font-family: 'DejaVu Sans';
+    url('../../vendor/mpdf/mpdf/ttfonts/DejaVuSans.ttf') format('truetype'), /* Safari, Android, iOS */
+}
+
+@font-face {
+    font-family: 'DejaVu Sans Bold';
+    url('../../vendor/mpdf/mpdf/ttfonts/DejaVuSans-Bold.ttf') format('truetype'), /* Safari, Android, iOS */
+}
+
+body {
+    font-size: 16px;
+    font-family: 'DejaVu Sans', sans-serif;
+}
