@@ -2,7 +2,38 @@
     "name": "jess/pdf-generator",
     "description": "WordPress plugin for generating PDFs",
     "require": {
-        "mpdf/mpdf": "^7.1"
+        "mpdf/mpdf": "^v8.0.7"
+    },
+    "config": {
+        "platform": {
+            "php": "5.6.20"
+        },
+        "classmap-authoritative": true
+    },
+    "scripts": {
+        "scope": [
+            "php-scoper add-prefix --force -o scoped-vendor -c scoper.inc.php",
+            "rm -rf scoped-vendor/mpdf/mpdf/data",
+            "cp -rf vendor/mpdf/mpdf/data/ scoped-vendor/mpdf/mpdf/data",
+            "cp -rf vendor/mpdf/mpdf/ttfonts/ scoped-vendor/mpdf/mpdf/ttfonts",
+            "cp -rf vendor/mpdf/mpdf/tmp/ scoped-vendor/mpdf/mpdf/tmp",
+            "rm -rf vendor/mpdf",
+            "rm -rf vendor/myclabs",
+            "rm -rf vendor/paragonie",
+            "rm -rf vendor/psr",
+            "rm -rf vendor/setasign",
+            "@composer dump-autoload"
+        ],
+        "post-update-cmd": "@scope",
+        "post-install-cmd": "@scope"
+    },
+    "autoload": {
+        "psr-4": {
+            "JesGs\\PDFGenerator\\Mpdf\\" : "scoped-vendor/mpdf/mpdf/src",
+            "JesGs\\PDFGenerator\\DeepCopy\\" : "scoped-vendor/myclabs/deep-copy/src",
+            "JesGs\\PDFGenerator\\setasign\\Fpdi\\" : "scoped-vendor/setasign/fpdi/src",
+            "JesGs\\PDFGenerator\\Psr\\Log\\" : "scoped-vendor/psr/log/Psr/Log"
+        }
     },
     "license": "GPL",
     "authors": [

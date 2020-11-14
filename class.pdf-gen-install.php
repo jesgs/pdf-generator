@@ -63,23 +63,10 @@ class PdfGeneratorInstall
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         $this->activation_checks();
 
-        if ($this->mpdf_exists()) {
-            wp_die(Translatable::get('different_mpdf'));
-        }
-
         $this->after_plugin_activation();
         flush_rewrite_rules(false);
     }
 
-
-    /**
-     * Check for existence of Mpdf
-     * @return bool
-     */
-    public function mpdf_exists()
-    {
-        return class_exists('Mpdf\Mpdf');
-    }
 
 
     /**
@@ -102,10 +89,10 @@ class PdfGeneratorInstall
             wp_die( __('Sorry, you must be an Administrator in order to use PdfGenerator', PDFGEN_DOMAIN) );
         }
 
-        if ( version_compare ($wp_version, '3.0', '<=')) {
+        if ( version_compare ($wp_version, '5.5', '<=')) {
             wp_die(
-                'Sorry, only WordPress 3.0 and later are supported.'
-                . ' Please upgrade to WordPress 3.0', 'Wrong Version'
+                'Sorry, only WordPress 5.5 and later are supported.'
+                . ' Please upgrade to WordPress 5.5', 'Wrong Version'
             );
         }
     }

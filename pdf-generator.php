@@ -20,7 +20,7 @@
  */
 namespace JesGs\PDFGenerator;
 
-use Mpdf\Mpdf;
+use JesGs\PDFGenerator\Mpdf\Mpdf as Mpdf;
 use JesGs\PDFGenerator\Lib\Translatable;
 
 if (!defined('ABSPATH')) exit;
@@ -42,6 +42,7 @@ if (!defined('PDFGEN_LANG')) {
     define('PDFGEN_LANG', $plugin_folder . '/lang');
 }
 
+require_once PDFGEN_ABSPATH . 'vendor/autoload.php';
 require_once PDFGEN_ABSPATH . 'class.pdf-view.php';
 require_once PDFGEN_ABSPATH . 'class.pdf-gen-install.php';
 require_once PDFGEN_ABSPATH . 'lib/translatable.php';
@@ -78,16 +79,6 @@ class Bootstrap
      */
     protected function __construct()
     {
-        if (!class_exists('Mpdf\Mpdf')) {
-            require_once PDFGEN_ABSPATH . 'vendor/autoload.php';
-        } else {
-            // check Mpdf version
-            // admin notice about another version of Mpdf being installed
-             if (version_compare(Mpdf::VERSION, '7.1.0', '>')) {
-                 wp_die(Translatable::get('old_mpdf'));
-             }
-        }
-
         add_action('init', array($this, 'init'), 999);
         add_filter('query_vars', array($this, 'query_vars'));
         add_filter('template_include', array($this, 'template_include'));

@@ -1,25 +1,26 @@
 <?php
 namespace JesGs\PDFGenerator;
 
-use \Mpdf\Mpdf as Mpdf;
-use \Mpdf\MpdfException;
-use \Mpdf\Output\Destination;
+
+use JesGs\PDFGenerator\Mpdf\Mpdf as Mpdf;
+use JesGs\PDFGenerator\Mpdf\MpdfException as MpdfException;
+use JesGs\PDFGenerator\Mpdf\Output\Destination as Destination;
 
 class PdfView
 {
     /**
-     * @var \JesGs\PDFGenerator\PdfView
+     * @var PdfView
      */
     private static $instance = null;
 
     /**
-     * @var \Mpdf\Mpdf
+     * @var Mpdf
      */
     private static $mpdf = null;
 
     /**
      * Get instance of object
-     * @return \JesGs\PDFGenerator\PdfView
+     * @return PdfView
      */
     public static function get_instance()
     {
@@ -33,7 +34,7 @@ class PdfView
 
     /**
      * Get an instance of Mpdf
-     * @return \Mpdf\Mpdf
+     * @return Mpdf
      */
     public static function get_mpdf_instance()
     {
@@ -43,11 +44,11 @@ class PdfView
                     'tempDir' => get_temp_dir() . '/pdftmp'
                 ]);
             } catch (MpdfException $exception) {
-                error_log($exception->getMessage());
+	            error_log($exception->getMessage());
             }
         }
 
-        return self::$mpdf;
+	    return self::$mpdf;
     }
 
     /**
